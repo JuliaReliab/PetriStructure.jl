@@ -8,7 +8,7 @@ makedocs(;
     authors="Hiroyuki Okamura <okamu@hiroshima-u.ac.jp> and contributors",
     sitename="PetriStructure.jl",
     format=Documenter.HTML(;
-        canonical="https://okamumu.github.io/PetriStructure.jl",
+        canonical="https://JuliaReliab.github.io/PetriStructure.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -18,6 +18,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/okamumu/PetriStructure.jl",
+    repo="github.com/JuliaReliab/PetriStructure.jl",
     devbranch="main",
 )

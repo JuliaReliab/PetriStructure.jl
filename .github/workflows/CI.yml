@@ -67,6 +67,6 @@ jobs:
         shell: julia --project=docs --color=yes {0}
         run: |
           using Documenter: DocMeta, doctest
-          using PetriNet
-          DocMeta.setdocmeta!(PetriNet, :DocTestSetup, :(using PetriNet); recursive=true)
-          doctest(PetriNet)
+          using PetriStructure
+          DocMeta.setdocmeta!(PetriStructure, :DocTestSetup, :(using PetriStructure); recursive=true)
+          doctest(PetriStructure)

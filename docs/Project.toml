@@ -1,6 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-PetriNet = "7f65ebd1-fc8e-474c-8d71-50405f87cf65"
+PetriStructure = "7f65ebd1-fc8e-474c-8d71-50405f87cf65"
 
 [sources]
-PetriNet = {path = ".."}
+PetriStructure = {path = ".."}
