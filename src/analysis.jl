@@ -1,14 +1,15 @@
 using StatsBase
 
 """
-    createevents(pn, rng, k)
+    createevents(pn, rng, k; xi=1.0)
 
-Sample `k` transition ids from `pn` using `rng` and rate-based weights.
+Sample `k` transition ids from `pn` using `rng` and rate/weight-based probabilities.
+For exponential transitions, use rate; for immediate transitions, use weight scaled by xi.
 """
-function createevents(pn, rng, k)
-    rates = [t.rate for t in pn.trans]
+function createevents(pn, rng, k; xi=1.0)
+    weights = [t isa ExpTrans ? t.rate : xi * t.weight for t in pn.trans]
     ev = [tr.id for tr in pn.trans]
-    return [sample(rng, ev, StatsBase.ProbabilityWeights(rates)) for i in 1:k]
+    return [sample(rng, ev, StatsBase.ProbabilityWeights(weights)) for i in 1:k]
 end
 
 function and(x::Bool, y::Bool)
