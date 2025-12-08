@@ -1,0 +1,13 @@
+name = "PetriNet"
+uuid = "7f65ebd1-fc8e-474c-8d71-50405f87cf65"
+authors = ["Hiroyuki Okamura <okamu@hiroshima-u.ac.jp> and contributors"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.10.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
