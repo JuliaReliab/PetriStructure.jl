@@ -1,0 +1,1275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="spnps01.xsd">
+	<net id="Net0" type="P/T net">
+		<place id="P0">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>0</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P1">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>1</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P2">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>2</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P3">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>3</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P4">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>4</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P5">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>5</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P6">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>6</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P7">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>7</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P8">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>8</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P9">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>9</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P10">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>10</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P11">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>11</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P12">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>12</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P13">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>13</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P14">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>14</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P15">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>15</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P16">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>16</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P17">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>17</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P18">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>18</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P19">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>19</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P20">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>20</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P21">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>21</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P22">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>22</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P23">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>23</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P24">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>24</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P25">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>25</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P26">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>26</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P27">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>27</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P28">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>28</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P29">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>29</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P30">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>30</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P31">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>31</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P32">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>32</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P33">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>33</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P34">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>34</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P35">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>35</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P36">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>36</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P37">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>37</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P38">
+			<initialMarking>
+				<value>0</value>
+			</initialMarking>
+			<ddOrder>
+				<value>38</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<place id="P39">
+			<initialMarking>
+				<value>1</value>
+			</initialMarking>
+			<ddOrder>
+				<value>39</value>
+			</ddOrder>
+			<bound>
+				<value>1</value>
+			</bound>
+		</place>
+		<transition id="T0">
+			<rate>
+				<value>1.9225350492273154e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T1">
+			<rate>
+				<value>1.0506222895582311e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T2">
+			<rate>
+				<value>1.2684034180214645e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T3">
+			<rate>
+				<value>1.3433471961614429e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T4">
+			<rate>
+				<value>1.3359212737232080e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T5">
+			<rate>
+				<value>1.3920725120194595e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T6">
+			<rate>
+				<value>1.0592906479999846e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T7">
+			<rate>
+				<value>1.4132764597485199e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T8">
+			<rate>
+				<value>1.3613763555704506e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T9">
+			<rate>
+				<value>1.3682336129100219e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T10">
+			<rate>
+				<value>1.5181886560833959e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T11">
+			<rate>
+				<value>1.6006088203753386e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T12">
+			<rate>
+				<value>1.7119206924512614e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T13">
+			<rate>
+				<value>1.4977457451157949e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T14">
+			<rate>
+				<value>1.6888635832298842e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T15">
+			<rate>
+				<value>1.8390356199066321e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T16">
+			<rate>
+				<value>1.6290393563122670e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T17">
+			<rate>
+				<value>1.6966803291331420e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T18">
+			<rate>
+				<value>1.4246704780611537e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T19">
+			<rate>
+				<value>1.4806129650588208e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T20">
+			<rate>
+				<value>3.9339481065673514e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T21">
+			<rate>
+				<value>3.0601361347642428e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T22">
+			<rate>
+				<value>7.0670353221087883e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T23">
+			<rate>
+				<value>2.0615883446585332e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T24">
+			<rate>
+				<value>1.0713763384946512e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T25">
+			<rate>
+				<value>5.1054073507457076e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T26">
+			<rate>
+				<value>5.0369134135716189e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T27">
+			<rate>
+				<value>7.6814608251123975e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T28">
+			<rate>
+				<value>1.0935021768293819e+01</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<transition id="T29">
+			<rate>
+				<value>4.8507989160021765e+00</value>
+			</rate>
+			<timed>
+				<value>true</value>
+			</timed>
+			<infiniteServer>
+				<value>false</value>
+			</infiniteServer>
+		</transition>
+		<arc id="P0 to T0" source="P0" target="T0">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T20 to P0" source="T20" target="P0">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T0 to P1" source="T0" target="P1">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P1 to T10" source="P1" target="T10">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T10 to P2" source="T10" target="P2">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P2 to T20" source="P2" target="T20">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P3 to T10" source="P3" target="T10">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P3 to T11" source="P3" target="T11">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T20 to P3" source="T20" target="P3">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T21 to P3" source="T21" target="P3">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P4 to T1" source="P4" target="T1">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T21 to P4" source="T21" target="P4">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T1 to P5" source="T1" target="P5">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P5 to T11" source="P5" target="T11">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T11 to P6" source="T11" target="P6">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P6 to T21" source="P6" target="T21">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P7 to T11" source="P7" target="T11">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P7 to T12" source="P7" target="T12">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T21 to P7" source="T21" target="P7">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T22 to P7" source="T22" target="P7">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P8 to T2" source="P8" target="T2">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T22 to P8" source="T22" target="P8">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T2 to P9" source="T2" target="P9">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P9 to T12" source="P9" target="T12">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T12 to P10" source="T12" target="P10">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P10 to T22" source="P10" target="T22">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P11 to T12" source="P11" target="T12">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P11 to T13" source="P11" target="T13">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T22 to P11" source="T22" target="P11">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T23 to P11" source="T23" target="P11">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P12 to T3" source="P12" target="T3">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T23 to P12" source="T23" target="P12">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T3 to P13" source="T3" target="P13">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P13 to T13" source="P13" target="T13">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T13 to P14" source="T13" target="P14">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P14 to T23" source="P14" target="T23">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P15 to T13" source="P15" target="T13">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P15 to T14" source="P15" target="T14">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T23 to P15" source="T23" target="P15">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T24 to P15" source="T24" target="P15">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P16 to T4" source="P16" target="T4">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T24 to P16" source="T24" target="P16">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T4 to P17" source="T4" target="P17">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P17 to T14" source="P17" target="T14">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T14 to P18" source="T14" target="P18">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P18 to T24" source="P18" target="T24">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P19 to T14" source="P19" target="T14">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P19 to T15" source="P19" target="T15">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T24 to P19" source="T24" target="P19">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T25 to P19" source="T25" target="P19">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P20 to T5" source="P20" target="T5">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T25 to P20" source="T25" target="P20">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T5 to P21" source="T5" target="P21">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P21 to T15" source="P21" target="T15">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T15 to P22" source="T15" target="P22">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P22 to T25" source="P22" target="T25">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P23 to T15" source="P23" target="T15">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P23 to T16" source="P23" target="T16">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T25 to P23" source="T25" target="P23">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T26 to P23" source="T26" target="P23">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P24 to T6" source="P24" target="T6">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T26 to P24" source="T26" target="P24">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T6 to P25" source="T6" target="P25">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P25 to T16" source="P25" target="T16">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T16 to P26" source="T16" target="P26">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P26 to T26" source="P26" target="T26">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P27 to T16" source="P27" target="T16">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P27 to T17" source="P27" target="T17">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T26 to P27" source="T26" target="P27">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T27 to P27" source="T27" target="P27">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P28 to T7" source="P28" target="T7">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T27 to P28" source="T27" target="P28">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T7 to P29" source="T7" target="P29">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P29 to T17" source="P29" target="T17">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T17 to P30" source="T17" target="P30">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P30 to T27" source="P30" target="T27">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P31 to T17" source="P31" target="T17">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P31 to T18" source="P31" target="T18">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T27 to P31" source="T27" target="P31">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T28 to P31" source="T28" target="P31">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P32 to T8" source="P32" target="T8">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T28 to P32" source="T28" target="P32">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T8 to P33" source="T8" target="P33">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P33 to T18" source="P33" target="T18">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T18 to P34" source="T18" target="P34">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P34 to T28" source="P34" target="T28">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P35 to T18" source="P35" target="T18">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P35 to T19" source="P35" target="T19">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T28 to P35" source="T28" target="P35">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T29 to P35" source="T29" target="P35">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P36 to T9" source="P36" target="T9">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T29 to P36" source="T29" target="P36">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T9 to P37" source="T9" target="P37">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P37 to T19" source="P37" target="T19">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T19 to P38" source="T19" target="P38">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P38 to T29" source="P38" target="T29">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P39 to T10" source="P39" target="T10">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="P39 to T19" source="P39" target="T19">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T20 to P39" source="T20" target="P39">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+		<arc id="T29 to P39" source="T29" target="P39">
+			<inscription>
+				<value>1</value>
+			</inscription>
+		</arc>
+	</net>
+</pnml>

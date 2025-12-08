@@ -1,9 +1,15 @@
-name = "PetriNet"
+name = "PetriStructure"
 uuid = "7f65ebd1-fc8e-474c-8d71-50405f87cf65"
-authors = ["Hiroyuki Okamura <okamu@hiroshima-u.ac.jp> and contributors"]
 version = "1.0.0-DEV"
+authors = ["Hiroyuki Okamura <okamu@hiroshima-u.ac.jp> and contributors"]
+
+[deps]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
 
 [compat]
+Random = "1.11.0"
 julia = "1.10.10"
 
 [extras]

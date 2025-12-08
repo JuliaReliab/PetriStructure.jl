@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = PetriNet
+CurrentModule = PetriStructure
 ```
 
-# PetriNet
+# PetriStructure
 
-Documentation for [PetriNet](https://github.com/okamumu/PetriNet.jl).
+Documentation for [PetriStructure](https://github.com/okamumu/PetriStructure.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [PetriNet]
+Modules = [PetriStructure]
 ```

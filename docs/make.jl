@@ -1,14 +1,14 @@
-using PetriNet
+using PetriStructure
 using Documenter
 
-DocMeta.setdocmeta!(PetriNet, :DocTestSetup, :(using PetriNet); recursive=true)
+DocMeta.setdocmeta!(PetriStructure, :DocTestSetup, :(using PetriStructure); recursive=true)
 
 makedocs(;
-    modules=[PetriNet],
+    modules=[PetriStructure],
     authors="Hiroyuki Okamura <okamu@hiroshima-u.ac.jp> and contributors",
-    sitename="PetriNet.jl",
+    sitename="PetriStructure.jl",
     format=Documenter.HTML(;
-        canonical="https://okamumu.github.io/PetriNet.jl",
+        canonical="https://okamumu.github.io/PetriStructure.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -18,6 +18,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/okamumu/PetriNet.jl",
+    repo="github.com/okamumu/PetriStructure.jl",
     devbranch="main",
 )
