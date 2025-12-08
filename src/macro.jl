@@ -4,92 +4,48 @@ Macro for defining Petri nets with a concise syntax.
 # Syntax
 ```julia
 @petrinet begin
-    # Places: place_name[initial_marking, max_marking]
+    # Places: name[initial, max]
     p1[1, 10]
     p2[0, 5]
     
-    # Transitions:
-    # exp(rate): t_name          # Exponential transition
-    # imm(weight): t_name         # Immediate transition
+    # Transitions: exp(rate): name or imm(weight): name
     exp(1.0): t1
     imm(1.0): t2
     
-    # Arcs: source => destination [multiplicity]
+    # Arcs: source => destination or source => destination[mult]
     p1 => t1
-    t1 => p2 [2]
+    t1 => p2[2]
     p2 => t2
     t2 => p1
     
-    # Guards: guard(trans_name, condition, [dependent_places...])
-    # Use place names directly: m.place_name
-    guard(t1, m -> m.p1 > 0, [p1])
-end
-```
-
-# Examples
-```julia
-# Simple producer-consumer
-@petrinet begin
-    buffer[0, 10]
-    producer[1, 1]
-    consumer[1, 1]
-    
-    exp(2.0): produce
-    exp(1.0): consume
-    
-    producer => produce
-    produce => buffer
-    produce => producer
-    buffer => consume
-    consume => consumer
-    consume => consumer
-end
-
-# With guard condition (use place names directly)
-@petrinet begin
-    p1[5, 10]
-    p2[0, 10]
-    exp(1.0): t1
-    p1 => t1
-    t1 => p2
-    guard(t1, m -> m.p1 >= 3, [p1])  # Only fire if p1 has >= 3 tokens
-end
-
-# Minimal example
-@petrinet begin
-    p1[1, 5]
-    p2[0, 5]
-    exp(1.0): t1
-    p1 => t1
-    t1 => p2
+    # Guards: guard(trans, [places...], condition)
+    # Use place names directly in condition
+    guard(t1, [p1], p1 > 0)
+    guard(t2, [p1, p2], p1 + p2 >= 3)
 end
 ```
 """
 macro petrinet(expr)
-    return esc(_parse_petrinet(expr))
+    return esc(_parse_petrinet_new(expr))
 end
 
-"""
-Parse the petrinet macro body and generate code to construct the Petri net.
-"""
-function _parse_petrinet(expr)
+function _parse_petrinet_new(expr)
     if expr.head != :block
         error("@petrinet expects a begin...end block")
     end
     
-    places = []
-    transitions = []
-    arcs = []
-    guards = []
+    places_list = []  # [(name, initial, max), ...] - preserve order
+    transitions_list = []  # (name, type, param)
+    arcs_list = []  # (from, to, mult)
+    guards_list = []  # (trans, places, condition)
     
     for line in expr.args
-        # Skip line number nodes
-        if isa(line, LineNumberNode)
+        if isa(line, LineNumberNode) || line === nothing
             continue
         end
         
-        # Skip empty lines
-        if line == nothing || (isa(line, Expr) && line.head == :tuple && isempty(line.args))
+        # Skip empty expressions
+        if isa(line, Expr) && line.head == :tuple && isempty(line.args)
             continue
         end
         
@@ -97,51 +53,41 @@ function _parse_petrinet(expr)
         if isa(line, Expr) && line.head == :ref
             place_name = line.args[1]
             if length(line.args) == 3
-                initial = line.args[2]
-                maxmark = line.args[3]
-                push!(places, (name=place_name, initial=initial, maxmark=maxmark))
+                push!(places_list, (name=place_name, initial=line.args[2], max=line.args[3]))
             elseif length(line.args) == 2
-                initial = line.args[2]
-                push!(places, (name=place_name, initial=initial, maxmark=nothing))
+                push!(places_list, (name=place_name, initial=line.args[2], max=nothing))
             else
                 error("Place syntax: name[initial, max] or name[initial]")
             end
-        # Parse transition with type: exp(rate): name or imm(weight): name
+        # Parse arc: a => b or a => b[mult]
         elseif isa(line, Expr) && line.head == :call && line.args[1] == :(=>)
-            # This is an arc definition
             lhs = line.args[2]
             rhs = line.args[3]
-            
-            # Check if multiplicity is specified: rhs => lhs [mult]
             mult = 1
+            
             if isa(rhs, Expr) && rhs.head == :ref
                 mult = rhs.args[2]
                 rhs = rhs.args[1]
             end
-            
-            push!(arcs, (from=lhs, to=rhs, mult=mult))
-        # Parse guard: guard(trans_name, func, [places...])
+            push!(arcs_list, (from=lhs, to=rhs, mult=mult))
+        # Parse guard: guard(trans, [places...], condition)
         elseif isa(line, Expr) && line.head == :call && line.args[1] == :guard
-            if length(line.args) < 3
-                error("Guard syntax: guard(trans_name, function, [place1, place2, ...])")
+            if length(line.args) != 4
+                error("Guard syntax: guard(trans, [places...], condition)")
             end
             trans_name = line.args[2]
-            guard_func = line.args[3]
-            guard_places = length(line.args) >= 4 ? line.args[4] : []
+            guard_places_expr = line.args[3]
+            condition = line.args[4]
             
-            # Convert guard_places to vector if it's not already
-            if !isa(guard_places, Expr) || guard_places.head != :vect
-                if guard_places != []
-                    guard_places = [guard_places]
-                else
-                    guard_places = []
-                end
+            # Extract places from vector
+            guard_places = if isa(guard_places_expr, Expr) && guard_places_expr.head == :vect
+                guard_places_expr.args
             else
-                guard_places = guard_places.args
+                error("Guard places must be specified as [place1, place2, ...]")
             end
             
-            push!(guards, (trans=trans_name, func=guard_func, places=guard_places))
-        # Parse transition definition: type(param): name
+            push!(guards_list, (trans=trans_name, places=guard_places, cond=condition))
+        # Parse transition: exp(rate): name or imm(weight): name
         elseif isa(line, Expr) && line.head == :call && line.args[1] == :(:)
             trans_spec = line.args[2]
             trans_name = line.args[3]
@@ -150,12 +96,10 @@ function _parse_petrinet(expr)
                 trans_type = trans_spec.args[1]
                 param = trans_spec.args[2]
                 
-                if trans_type == :exp
-                    push!(transitions, (name=trans_name, type=:exp, param=param))
-                elseif trans_type == :imm
-                    push!(transitions, (name=trans_name, type=:imm, param=param))
+                if trans_type in [:exp, :imm]
+                    push!(transitions_list, (name=trans_name, type=trans_type, param=param))
                 else
-                    error("Unknown transition type: $trans_type. Use exp() or imm()")
+                    error("Transition type must be exp() or imm()")
                 end
             else
                 error("Transition syntax: exp(rate): name or imm(weight): name")
@@ -165,53 +109,50 @@ function _parse_petrinet(expr)
         end
     end
     
-    # Generate code to construct the Petri net
+    # Generate code
     code = quote
         pn = petri()
     end
     
-    # Add places
-    for p in places
-        if p.maxmark === nothing
-            # Default max to a large value if not specified
-            push!(code.args, :($(p.name) = place(pn, $(String(p.name)), $(p.initial), 1000000)))
-        else
-            push!(code.args, :($(p.name) = place(pn, $(String(p.name)), $(p.initial), $(p.maxmark))))
-        end
+    # Add places (in order)
+    for pinfo in places_list
+        pname_str = String(pinfo.name)
+        pmax = pinfo.max === nothing ? 1000000 : pinfo.max
+        push!(code.args, :($(pinfo.name) = place(pn, $(pname_str), $(pinfo.initial), $(pmax))))
     end
     
     # Add transitions
-    for t in transitions
+    for t in transitions_list
+        tname_str = String(t.name)
         if t.type == :exp
-            push!(code.args, :($(t.name) = exptrans(pn, $(String(t.name)), $(t.param))))
-        elseif t.type == :imm
-            push!(code.args, :($(t.name) = immtrans(pn, $(String(t.name)), $(t.param))))
+            push!(code.args, :($(t.name) = exptrans(pn, $(tname_str), $(t.param))))
+        else  # :imm
+            push!(code.args, :($(t.name) = immtrans(pn, $(tname_str), $(t.param))))
         end
     end
     
     # Add arcs
-    for a in arcs
+    for a in arcs_list
         push!(code.args, :(arc(pn, $(a.from), $(a.to), mul=$(a.mult))))
     end
     
     # Add guards
-    for g in guards
-        places_array = Expr(:vect, g.places...)
+    for g in guards_list
+        # Create wrapper function that converts marking vector to local variables
+        # Use pn.place_index to look up indices at runtime
+        guard_place_names = g.places
         
-        # Create a wrapper function that converts marking vector to named tuple
-        # This allows users to write: m -> m.place_name >= 5
-        # instead of: m -> m[1] >= 5
-        place_names = [Symbol(String(p)) for p in g.places]
-        place_indices = [findfirst(pl -> pl.name == p, places) for p in g.places]
+        # Build variable assignments: place_name = m_vec[pn.place_index[:place_name]]
+        var_assignments = [:($(pname) = m_vec[pn.place_index[$(QuoteNode(pname))]]) for pname in guard_place_names]
         
-        # Generate: (m_vec) -> begin m = (; place1=m_vec[i1], place2=m_vec[i2], ...); original_func(m) end
-        namedtuple_expr = Expr(:tuple, [Expr(:(=), pname, :(m_vec[$(pidx)])) for (pname, pidx) in zip(place_names, place_indices)]...)
-        wrapper_func = :(m_vec -> begin
-            m = (; $(namedtuple_expr.args...))
-            ($(g.func))(m)
+        # Create wrapper: m_vec -> begin place1=...; place2=...; condition end
+        wrapper = :(m_vec -> begin
+            $(var_assignments...)
+            $(g.cond)
         end)
         
-        push!(code.args, :(guard($(g.trans), $(wrapper_func), $(places_array))))
+        places_vect = Expr(:vect, g.places...)
+        push!(code.args, :(guard($(g.trans), $(wrapper), $(places_vect))))
     end
     
     # Return the Petri net

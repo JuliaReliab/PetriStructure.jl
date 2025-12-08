@@ -224,7 +224,7 @@ using Random
             exp(1.0): t1
             p1 => t1
             t1 => p2
-            guard(t1, m -> m.p1 >= 3, [p1])
+            guard(t1, [p1], p1 >= 3)
         end
         
         @test length(pn5.trans) == 1

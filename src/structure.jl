@@ -98,6 +98,7 @@ struct PN
     exptrans::Vector{AbstractTrans}
     immtrans::Vector{AbstractTrans}
     reward::Vector{Function}
+    place_index::Dict{Symbol,Int}  # place label (Symbol) => index in places array
 end
 
 """
@@ -106,7 +107,7 @@ end
 Create an empty Petri net container.
 """
 function petri()
-    PN(Dict(), [], [], [], [], [])
+    PN(Dict(), [], [], [], [], [], Dict())
 end
 
 """
@@ -121,6 +122,7 @@ function place(pn::PN, label::String, init::Int, max::Int; level = 0)
     p = Place(length(pn.places)+1, label, level, init, collect(0:max), [], [])
     push!(pn.places, p)
     pn.labels[label] = p
+    pn.place_index[Symbol(label)] = length(pn.places)  # Register index by Symbol
     p
 end
 

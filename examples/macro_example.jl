@@ -148,8 +148,8 @@ pn6 = @petrinet begin
     stock => ship[3]        # Ship 3 items at a time
     ship => warehouse[3]
     
-    # Only ship if stock has at least 5 items (use place name directly)
-    guard(ship, m -> m.stock >= 5, [stock])
+    # Only ship if stock has at least 5 items
+    guard(ship, [stock], stock >= 5)
 end
 
 println("Places: ", length(pn6.places))
@@ -175,7 +175,7 @@ pn7 = @petrinet begin
     buffer2 => process
     process => output[2]
     # Process only if both buffers have enough items
-    guard(process, m -> m.buffer1 >= 2 && m.buffer2 >= 2, [buffer1, buffer2])
+    guard(process, [buffer1, buffer2], buffer1 >= 2 && buffer2 >= 2)
 end
 
 m_ok = [5, 3, 0]
