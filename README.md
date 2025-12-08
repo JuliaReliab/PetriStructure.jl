@@ -80,6 +80,54 @@ Tinv = tinvariant(C)
 dot_string = todot(pn)
 ```
 
+### Using the `@petrinet` Macro
+
+The `@petrinet` macro provides a concise syntax for defining Petri nets:
+
+```julia
+using PetriStructure
+
+# Define a simple producer-consumer model
+pn = @petrinet begin
+    # Places: name[initial_marking, max_marking]
+    buffer[0, 10]
+    producer[1, 1]
+    consumer[1, 1]
+    
+    # Transitions: exp(rate): name or imm(weight): name
+    exp(2.0): produce
+    exp(1.0): consume
+    
+    # Arcs: source => destination [multiplicity]
+    producer => produce
+    produce => buffer
+    produce => producer
+    buffer => consume
+    consume => consumer
+    consume => consumer
+end
+
+# Arc multiplicities
+pn2 = @petrinet begin
+    input[5, 10]
+    output[0, 10]
+    exp(1.0): process
+    input => process[2]    # Consumes 2 tokens
+    process => output[3]   # Produces 3 tokens
+end
+
+# With guard conditions (use place names directly)
+pn3 = @petrinet begin
+    stock[10, 20]
+    warehouse[0, 100]
+    exp(2.0): ship
+    stock => ship[3]
+    ship => warehouse[3]
+    # Only fire if stock >= 5
+    guard(ship, m -> m.stock >= 5, [stock])
+end
+```
+
 ## Examples
 
 ### Simple Producer-Consumer
@@ -145,6 +193,28 @@ events = createevents(pn, rng, 1000)
 ## API Reference
 
 ### Petri Net Construction
+
+#### Macro Syntax
+
+- `@petrinet begin ... end` - Declarative Petri net definition
+
+```julia
+@petrinet begin
+    place_name[initial, max]           # Define place
+    exp(rate): trans_name              # Exponential transition
+    imm(weight): trans_name            # Immediate transition
+    source => destination              # Arc (multiplicity 1)
+    source => destination[mult]        # Arc with multiplicity
+    guard(trans, func, [places...])    # Guard condition (use m.place_name)
+end
+
+# Guard examples:
+guard(t1, m -> m.p1 >= 5, [p1])                      # Single place
+guard(t2, m -> m.p1 + m.p2 >= 10, [p1, p2])          # Multiple places
+guard(t3, m -> m.stock >= 3 && m.buffer < 10, [stock, buffer])  # Complex condition
+```
+
+#### Functional API
 
 - `petri()` - Create empty Petri net
 - `place(pn, label, initial, max; level=0)` - Add place

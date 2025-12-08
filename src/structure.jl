@@ -96,6 +96,7 @@ struct PN
     places::Vector{AbstractPlace}
     trans::Vector{AbstractTrans}
     exptrans::Vector{AbstractTrans}
+    immtrans::Vector{AbstractTrans}
     reward::Vector{Function}
 end
 
@@ -105,7 +106,7 @@ end
 Create an empty Petri net container.
 """
 function petri()
-    PN(Dict(), [], [], [], [])
+    PN(Dict(), [], [], [], [], [])
 end
 
 """

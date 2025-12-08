@@ -70,6 +70,33 @@ Shows how to load Petri nets from PNML format files:
 julia --project examples/pnml_example.jl
 ```
 
+### 5. macro_example.jl
+
+Demonstrates the `@petrinet` macro for concise Petri net definition:
+- Declarative syntax for places and transitions
+- Arc definitions with multiplicities
+- Mixed exponential and immediate transitions
+- P-invariant computation
+- DOT export
+
+**Run:**
+```bash
+julia --project examples/macro_example.jl
+```
+
+### 6. invariant_example.jl
+
+Shows P-invariant and T-invariant analysis:
+- Computing conservation laws (P-invariants)
+- Finding cyclic firing sequences (T-invariants)
+- Mathematical verification
+- Interpretation of invariants
+
+**Run:**
+```bash
+julia --project examples/invariant_example.jl
+```
+
 ## Visualizing Petri Nets
 
 Several examples generate DOT files that can be visualized using Graphviz:

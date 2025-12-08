@@ -24,6 +24,13 @@ using Random
         p1 = place(pn, "p1", 1, 2)
         p2 = place(pn, "p2", 0, 2)
         tr = exptrans(pn, "t1", 1.5)
+        tr2 = immtrans(pn, "t2", 2.0)
+
+        @test length(pn.trans) == 2
+        @test length(pn.exptrans) == 1
+        @test length(pn.immtrans) == 1
+        @test pn.exptrans[1] === tr
+        @test pn.immtrans[1] === tr2
 
         inarc(pn, "p1", "t1"; mul = 1)
         outarc(pn, "t1", "p2"; mul = 1)
@@ -150,5 +157,84 @@ using Random
         @test length(pn2.places) == 40
         @test length(pn2.trans) == 30
         @test initial(pn2) == initial(pn)
+    end
+
+    @testset "@petrinet macro" begin
+        # Test basic place and transition creation
+        pn = @petrinet begin
+            p1[1, 5]
+            p2[0, 5]
+            exp(2.0): t1
+            p1 => t1
+            t1 => p2
+        end
+        
+        @test length(pn.places) == 2
+        @test length(pn.trans) == 1
+        @test initial(pn) == [1, 0]
+        @test pn.trans[1] isa PetriStructure.ExpTrans
+        @test pn.trans[1].rate == 2.0
+        
+        # Test with multiplicities
+        pn2 = @petrinet begin
+            p1[3, 10]
+            p2[0, 10]
+            exp(1.0): t1
+            p1 => t1[2]
+            t1 => p2[3]
+        end
+        
+        C = incidence(pn2)
+        @test C[1, 1] == -2  # Input arc with multiplicity 2
+        @test C[2, 1] == 3   # Output arc with multiplicity 3
+        
+        # Test immediate transition
+        pn3 = @petrinet begin
+            p1[1, 5]
+            p2[0, 5]
+            imm(2.5): t1
+            p1 => t1
+            t1 => p2
+        end
+        
+        @test pn3.trans[1] isa PetriStructure.ImmTrans
+        @test pn3.trans[1].weight == 2.5
+        
+        # Test multiple transitions and arcs
+        pn4 = @petrinet begin
+            p1[1, 3]
+            p2[0, 3]
+            p3[0, 3]
+            exp(1.0): t1
+            exp(2.0): t2
+            p1 => t1
+            t1 => p2
+            p2 => t2
+            t2 => p3
+        end
+        
+        @test length(pn4.places) == 3
+        @test length(pn4.trans) == 2
+        @test initial(pn4) == [1, 0, 0]
+        
+        # Test with guard
+        pn5 = @petrinet begin
+            p1[5, 10]
+            p2[0, 10]
+            exp(1.0): t1
+            p1 => t1
+            t1 => p2
+            guard(t1, m -> m.p1 >= 3, [p1])
+        end
+        
+        @test length(pn5.trans) == 1
+        @test length(pn5.trans[1].guard) == 1
+        @test length(pn5.trans[1].guardplaces) == 1
+        
+        # Test guard condition
+        marking = [5, 0]
+        @test pn5.trans[1].guard[1](marking) == true
+        marking = [2, 0]
+        @test pn5.trans[1].guard[1](marking) == false
     end
 end
