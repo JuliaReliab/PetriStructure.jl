@@ -89,7 +89,7 @@ end
 """
     PN
 
-Container for a Petri net, storing places, transitions, arcs, and rewards.
+Container for a Petri net, storing places, transitions, and arcs.
 """
 struct PN
     labels::Dict{String,Union{AbstractPlace,AbstractTrans}}
@@ -97,7 +97,6 @@ struct PN
     trans::Vector{AbstractTrans}
     exptrans::Vector{AbstractTrans}
     immtrans::Vector{AbstractTrans}
-    reward::Vector{Function}
     place_index::Dict{Symbol,Int}  # place label (Symbol) => index in places array
 end
 
@@ -107,7 +106,7 @@ end
 Create an empty Petri net container.
 """
 function petri()
-    PN(Dict(), [], [], [], [], [], Dict())
+    PN(Dict(), [], [], [], [], Dict())
 end
 
 """
@@ -200,15 +199,6 @@ function arc(pn::PN, src::AbstractTrans, dest::AbstractPlace; mul::Int = 1)
     push!(src.outarcs, a)
     push!(dest.inarcs, a)
     a
-end
-
-"""
-    reward(pn, f)
-
-Register a reward function `f` evaluated on markings or states.
-"""
-function reward(pn::PN, f)
-    push!(pn.reward, f)
 end
 
 """

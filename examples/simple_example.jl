@@ -85,23 +85,6 @@ else
 end
 println()
 
-# Generate random events
-println("=== Random Event Generation ===")
-rng = Random.MersenneTwister(42)
-events = createevents(pn, rng, 20)
-println("Generated event sequence (transition IDs):")
-println(events)
-println()
-
-# Count events by transition
-count_t1 = count(==(t1.id), events)
-count_t2 = count(==(t2.id), events)
-println("t1 events: $count_t1")
-println("t2 events: $count_t2")
-println("Expected ratio (t2/t1): ", 2.0/1.5, " ≈ 1.33")
-println("Actual ratio (t2/t1): ", count_t2/count_t1)
-println()
-
 # Export to DOT format
 println("=== DOT Format Export ===")
 dot_string = todot(pn)

@@ -1,0 +1,15 @@
+digraph { layout=dot; overlap=false; splines=true; node [fontsize=10];
+subgraph cluster0 {
+"obj6094426529986717687" [shape=circle,label="p1"];
+"obj18278116643942283656"->"obj6094426529986717687" [label=""];
+"obj18278116643942283656" [shape=box,label="t2", width=0.8, height=0.2];
+"obj13300068876283832316"->"obj18278116643942283656" [label=""];
+"obj13300068876283832316" [shape=circle,label="p2"];
+"obj8374469361297510936"->"obj13300068876283832316" [label=""];
+"obj8374469361297510936" [shape=box,label="t1", width=0.8, height=0.2];
+"obj6094426529986717687"->"obj8374469361297510936" [label=""];
+"obj16666497863521796669"->"obj18278116643942283656" [label=""];
+"obj16666497863521796669" [shape=circle,label="p3"];
+"obj18278116643942283656"->"obj16666497863521796669" [label=""];
+}
+}

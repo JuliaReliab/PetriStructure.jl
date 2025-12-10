@@ -83,6 +83,27 @@ result = C' * M
 println("Maximum absolute value in C' * M: ", maximum(abs.(result)))
 println()
 
+# Calculate P-invariant basis using Smith Normal Form
+println("Computing P-invariant basis using Smith Normal Form:")
+Mbasis = pinvariant_basis(C)
+println("P-invariant basis size: ", size(Mbasis))
+println("Number of basis vectors: ", size(Mbasis, 1))
+println()
+
+# Verify P-invariant basis
+println("Verifying P-invariant basis (C' * Mbasis' should be zero):")
+result_basis = C' * Mbasis'
+println("Maximum absolute value in C' * Mbasis': ", maximum(abs.(result_basis)))
+println()
+
+# Check if basis vectors can be positive or negative
+println("Basis vector statistics:")
+println("  Vectors with all non-negative elements: ", 
+        count(all(Mbasis[i, :] .>= 0) for i in 1:size(Mbasis, 1)))
+println("  Vectors with mixed signs: ", 
+        count(any(Mbasis[i, :] .< 0) && any(Mbasis[i, :] .> 0) for i in 1:size(Mbasis, 1)))
+println()
+
 # Display initial marking
 m0 = initial(pn)
 println("Initial marking total: ", sum(m0))

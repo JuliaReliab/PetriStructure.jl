@@ -15,12 +15,10 @@ A Julia package for modeling and analyzing Petri nets, including Generalized Sto
   - Immediate transitions with priority weights
 - **Analysis Tools**:
   - Incidence matrix computation
-  - P-invariant and T-invariant calculation
+  - P-invariant and T-invariant calculation (both classical and SNF-based methods)
   - Marking analysis (initial, minimum, maximum)
 - **PNML Support**: Load Petri nets from PNML format files
 - **Visualization**: Export to Graphviz DOT format
-- **Random Number Generation**: Built-in WELL1024a generator
-- **Event Generation**: Generate stochastic event sequences
 
 ## Important Notes
 
@@ -151,11 +149,6 @@ outarc(pn, "produce", "ready")
 
 # Consumer
 inarc(pn, "buffer", "consume")
-
-# Generate random events
-using Random
-rng = Random.MersenneTwister(42)
-events = createevents(pn, rng, 100)
 ```
 
 ### Loading from PNML
@@ -172,21 +165,6 @@ pn = load_pnml(io)
 
 println("Places: ", length(pn.places))
 println("Transitions: ", length(pn.trans))
-```
-
-### Using WELL1024a Random Generator
-
-```julia
-using PetriStructure
-
-# Create RNG with seed
-rng = WELL1024a(123456789)
-
-# Generate random numbers
-x = rand(rng)  # Single Float64 in [0, 1)
-
-# Use with Petri net events
-events = createevents(pn, rng, 1000)
 ```
 
 ## API Reference
@@ -223,7 +201,6 @@ guard(t3, [stock, buffer], stock >= 3 && buffer < 10)  # Complex condition
 - `outarc(pn, trans, place; mul=1)` - Add output arc
 - `arc(pn, src, dest; mul=1)` - Generic arc (direction auto-detected)
 - `guard(trans, func, places)` - Add guard condition to transition
-- `reward(pn, func)` - Add reward function
 
 ### Marking Operations
 
@@ -242,20 +219,14 @@ guard(t3, [stock, buffer], stock >= 3 && buffer < 10)  # Complex condition
 
 - `incidence(pn)` - Compute incidence matrix
 - `pinvariant(C)` - Compute P-invariants from incidence matrix (conservation laws)
+- `pinvariant_basis(C)` - Compute P-invariant basis using Smith Normal Form (allows signed coefficients)
 - `tinvariant(C)` - Compute T-invariants from incidence matrix (cyclic firing sequences)
-- `createevents(pn, rng, n)` - Generate n random transition events
 
 ### File I/O
 
 - `load_pnml(path)` - Load from PNML file
 - `load_pnml(io)` - Load from IO stream
 - `todot(pn)` - Export to Graphviz DOT format
-
-### Random Number Generation
-
-- `WELL1024a(seed)` - Create WELL1024a RNG with seed
-- `WELL1024a(init_array)` - Create from UInt32 array
-- `rand(rng)` - Generate random Float64
 
 ## More Examples
 
@@ -264,7 +235,7 @@ See the [`examples/`](examples/) directory for detailed examples:
 - [`simple_example.jl`](examples/simple_example.jl) - Basic Petri net operations
 - [`dining_philosophers.jl`](examples/dining_philosophers.jl) - Classic dining philosophers problem
 - [`invariant_example.jl`](examples/invariant_example.jl) - P-invariants and T-invariants analysis
-- [`well1024a_example.jl`](examples/well1024a_example.jl) - Random number generation
+- [`macro_example.jl`](examples/macro_example.jl) - Using the @petrinet macro
 - [`pnml_example.jl`](examples/pnml_example.jl) - Loading PNML files
 
 ## Visualization
@@ -299,7 +270,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - **Petri Nets**: C.A. Petri, "Kommunikation mit Automaten" (1962)
 - **GSPN**: M. Ajmone Marsan et al., "Modelling with Generalized Stochastic Petri Nets" (1995)
-- **WELL1024a**: F. Panneton, P. L'Ecuyer, M. Matsumoto, "Improved Long-Period Generators Based on Linear Recurrences Modulo 2" (2006)
+- **Smith Normal Form**: Used for invariant computation via the Nemo.jl library
 
 ## Contributing
 

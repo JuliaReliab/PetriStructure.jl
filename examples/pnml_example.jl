@@ -33,7 +33,7 @@ if isfile(pnml_file)
     println("3. Transition information (first 5):")
     for i in 1:min(5, length(pn.trans))
         t = pn.trans[i]
-        if t isa PetriNet.ExpTrans
+        if t isa PetriStructure.ExpTrans
             println("  $(t.label): ExpTrans, rate=$(t.rate)")
         else
             println("  $(t.label): ImmTrans, weight=$(t.weight)")

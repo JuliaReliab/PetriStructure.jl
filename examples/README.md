@@ -21,7 +21,6 @@ A basic introduction to PetriStructure.jl covering:
 - Computing incidence matrices
 - Finding P-invariants
 - Enabling and firing transitions
-- Generating random events
 - Exporting to DOT format
 
 **Run:**
@@ -42,21 +41,7 @@ Implementation of the classical dining philosophers problem with 50 philosophers
 julia --project examples/dining_philosophers.jl
 ```
 
-### 3. well1024a_example.jl
-
-Demonstrates the WELL1024a random number generator:
-- Basic random number generation
-- Reproducibility with seeds
-- Statistical properties verification
-- Integration with PetriNet event generation
-- Performance comparison with MersenneTwister
-
-**Run:**
-```bash
-julia --project examples/well1024a_example.jl
-```
-
-### 4. pnml_example.jl
+### 3. pnml_example.jl
 
 Shows how to load Petri nets from PNML format files:
 - Loading from file path
@@ -70,7 +55,7 @@ Shows how to load Petri nets from PNML format files:
 julia --project examples/pnml_example.jl
 ```
 
-### 5. macro_example.jl
+### 4. macro_example.jl
 
 Demonstrates the `@petrinet` macro for concise Petri net definition:
 - Declarative syntax for places and transitions
@@ -84,7 +69,7 @@ Demonstrates the `@petrinet` macro for concise Petri net definition:
 julia --project examples/macro_example.jl
 ```
 
-### 6. invariant_example.jl
+### 5. invariant_example.jl
 
 Shows P-invariant and T-invariant analysis:
 - Computing conservation laws (P-invariants)
@@ -135,12 +120,8 @@ dot -Tpdf simple_example.dot -o simple_example.pdf
 ### Analysis
 - **Incidence Matrix**: `C = incidence(pn)` - structural analysis
 - **P-invariants**: `M = pinvariant(C)` - conservation laws
+- **T-invariants**: `M = tinvariant(C)` - cyclic firing sequences
 - **Enable/Fire**: Check if transitions can fire and compute resulting marking
-
-### Random Number Generation
-- Built-in WELL1024a generator for high-quality random numbers
-- Compatible with Julia's Random interface
-- Use with `createevents(pn, rng, n)` for event generation
 
 ### File I/O
 - Import from PNML: `load_pnml(filename)` or `load_pnml(io)`

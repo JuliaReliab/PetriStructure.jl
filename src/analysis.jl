@@ -1,16 +1,4 @@
-using StatsBase
-
-"""
-    createevents(pn, rng, k; xi=1.0)
-
-Sample `k` transition ids from `pn` using `rng` and rate/weight-based probabilities.
-For exponential transitions, use rate; for immediate transitions, use weight scaled by xi.
-"""
-function createevents(pn, rng, k; xi=1.0)
-    weights = [t isa ExpTrans ? t.rate : xi * t.weight for t in pn.trans]
-    ev = [tr.id for tr in pn.trans]
-    return [sample(rng, ev, StatsBase.ProbabilityWeights(weights)) for i in 1:k]
-end
+import Nemo
 
 function and(x::Bool, y::Bool)
     x && y
@@ -118,6 +106,31 @@ function pinvariant(C)
     end
     X = collect(A[:,n+1:end]')
     return X
+end
+
+"""
+    pinvariant_basis(C)
+
+Compute a basis of P-invariants for incidence matrix `C` via Smith normal
+form using `Nemo.snf_with_transform`. Returns a matrix whose rows form a basis
+for the left-nullspace of `C`, allowing both positive and negative coefficients.
+"""
+function pinvariant_basis(C)
+    m, n = size(C)
+    A = Nemo.matrix(Nemo.ZZ, C)
+
+    S, T, _ = Nemo.snf_with_transform(A)
+    r = Nemo.rank(S)
+    if r >= m
+        return zeros(Int, 0, n)
+    end
+
+    basis = T[(r + 1):m, :]
+    B = zeros(Int, Nemo.nrows(basis), Nemo.ncols(basis))
+    for i in 1:Nemo.nrows(basis), j in 1:Nemo.ncols(basis)
+        B[i, j] = Int(basis[i, j])
+    end
+    return B
 end
 
 """
