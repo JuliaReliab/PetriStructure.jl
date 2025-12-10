@@ -126,9 +126,9 @@ function pinvariant_basis(C)
     end
 
     basis = T[(r + 1):m, :]
-    B = zeros(Int, Nemo.nrows(basis), Nemo.ncols(basis))
+    B = zeros(Int, Nemo.ncols(basis), Nemo.nrows(basis))
     for i in 1:Nemo.nrows(basis), j in 1:Nemo.ncols(basis)
-        B[i, j] = Int(basis[i, j])
+        B[j, i] = Int(basis[i, j])
     end
     return B
 end

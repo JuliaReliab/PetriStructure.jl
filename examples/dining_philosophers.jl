@@ -87,21 +87,13 @@ println()
 println("Computing P-invariant basis using Smith Normal Form:")
 Mbasis = pinvariant_basis(C)
 println("P-invariant basis size: ", size(Mbasis))
-println("Number of basis vectors: ", size(Mbasis, 1))
+println("Number of basis vectors: ", size(Mbasis, 2))
 println()
 
 # Verify P-invariant basis
-println("Verifying P-invariant basis (C' * Mbasis' should be zero):")
-result_basis = C' * Mbasis'
-println("Maximum absolute value in C' * Mbasis': ", maximum(abs.(result_basis)))
-println()
-
-# Check if basis vectors can be positive or negative
-println("Basis vector statistics:")
-println("  Vectors with all non-negative elements: ", 
-        count(all(Mbasis[i, :] .>= 0) for i in 1:size(Mbasis, 1)))
-println("  Vectors with mixed signs: ", 
-        count(any(Mbasis[i, :] .< 0) && any(Mbasis[i, :] .> 0) for i in 1:size(Mbasis, 1)))
+println("Verifying P-invariant basis (C' * Mbasis should be zero):")
+result_basis = C' * Mbasis
+println("Maximum absolute value in C' * Mbasis: ", maximum(abs.(result_basis)))
 println()
 
 # Display initial marking
