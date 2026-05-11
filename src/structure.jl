@@ -25,7 +25,7 @@ end
 """
     ImmTrans
 
-Immediate transition with weight and optional guard functions.
+Immediate transition with weight and optional guard expressions.
 """
 struct ImmTrans <: AbstractTrans
     id::Int
@@ -34,14 +34,14 @@ struct ImmTrans <: AbstractTrans
     inarcs::Vector{AbstractArc}
     outarcs::Vector{AbstractArc}
     weight::Float64
-    guard::Vector{Function}
+    guard::Vector{GuardExpr}
     guardplaces::Set{AbstractPlace}
 end
 
 """
     ExpTrans
 
-Exponential (timed) transition with firing rate and optional guard functions.
+Exponential (timed) transition with firing rate and optional guard expressions.
 """
 struct ExpTrans <: AbstractTrans
     id::Int
@@ -50,16 +50,16 @@ struct ExpTrans <: AbstractTrans
     inarcs::Vector{AbstractArc}
     outarcs::Vector{AbstractArc}
     rate::Float64
-    guard::Vector{Function}
+    guard::Vector{GuardExpr}
     guardplaces::Set{AbstractPlace}
 end
 
 """
-    guard(tr, g, places)
+    guard(tr, g::GuardExpr, places)
 
-Attach guard function `g` to transition `tr` and mark dependent `places`.
+Attach structured guard expression `g` to transition `tr` and record dependent `places`.
 """
-function guard(tr::AbstractTrans, g, p)
+function guard(tr::AbstractTrans, g::GuardExpr, p)
     push!(tr.guard, g)
     push!(tr.guardplaces, p...)
 end
@@ -134,7 +134,7 @@ function immtrans(pn::PN, label::String, weight::Float64; level = 0)
     if level == 0
         level = length(pn.trans)+1
     end
-    e = ImmTrans(length(pn.trans)+1, label, level, [], [], weight, [], Set())
+    e = ImmTrans(length(pn.trans)+1, label, level, [], [], weight, GuardExpr[], Set())
     push!(pn.trans, e)
     push!(pn.immtrans, e)
     pn.labels[label] = e
@@ -150,7 +150,7 @@ function exptrans(pn::PN, label::String, rate::Float64; level = 0)
     if level == 0
         level = length(pn.trans)+1
     end
-    e = ExpTrans(length(pn.trans)+1, label, level, [], [], rate, [], Set())
+    e = ExpTrans(length(pn.trans)+1, label, level, [], [], rate, GuardExpr[], Set())
     push!(pn.trans, e)
     push!(pn.exptrans, e)
     pn.labels[label] = e

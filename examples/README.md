@@ -82,6 +82,22 @@ Shows P-invariant and T-invariant analysis:
 julia --project examples/invariant_example.jl
 ```
 
+### 6. hnf_lll_example.jl
+
+Demonstrates the HNF/LLL state-space parametrization:
+- `integer_kernel` — right null space of the P-invariant matrix (via SNF)
+- `lll_reduce` — LLL lattice basis reduction for shorter, local basis vectors
+- `pinvariant_reduce` — full pipeline producing `x = x0 + K*t`
+- Scale study on the Dining Philosophers showing consistent 50% dimension
+  reduction (4N places → 2N free dimensions after absorbing 2N invariants)
+- Motivation: wide P-invariants cause O(N) MDD node growth; absorbing them
+  into the t-space parametrization removes them from the MDD structure
+
+**Run:**
+```bash
+julia --project examples/hnf_lll_example.jl
+```
+
 ## Visualizing Petri Nets
 
 Several examples generate DOT files that can be visualized using Graphviz:

@@ -3,8 +3,13 @@ module PetriStructure
 export petri, place, immtrans, exptrans, guard, arc, inarc, outarc,
        initial, maxmark, minmark, enablefunc, firingfunc,
        domain, incidence, pinvariant, pinvariant_basis, tinvariant, next, todot, load_pnml,
-       @petrinet
+       integer_kernel, lll_reduce, pinvariant_reduce,
+       getinoutplaces, getrelatedplaces,
+       @petrinet,
+       GuardExpr, GuardGeq, GuardLeq, GuardEq, GuardGt, GuardLt, GuardNe,
+       GuardAnd, GuardOr, GuardNot, evaluate, guardplace_ids
 
+include("guard.jl")       # GuardExpr types must be defined before structure.jl
 include("structure.jl")
 include("analysis.jl")
 include("dot.jl")

@@ -138,25 +138,69 @@ function _parse_petrinet_new(expr)
     
     # Add guards
     for g in guards_list
-        # Create wrapper function that converts marking vector to local variables
-        # Use pn.place_index to look up indices at runtime
-        guard_place_names = g.places
-        
-        # Build variable assignments: place_name = m_vec[pn.place_index[:place_name]]
-        var_assignments = [:($(pname) = m_vec[pn.place_index[$(QuoteNode(pname))]]) for pname in guard_place_names]
-        
-        # Create wrapper: m_vec -> begin place1=...; place2=...; condition end
-        wrapper = :(m_vec -> begin
-            $(var_assignments...)
-            $(g.cond)
-        end)
-        
+        guard_place_syms = Set(g.places)
+        ast_expr = _parse_guard_cond(g.cond, guard_place_syms)
         places_vect = Expr(:vect, g.places...)
-        push!(code.args, :(guard($(g.trans), $(wrapper), $(places_vect))))
+        push!(code.args, :(guard($(g.trans), $(ast_expr), $(places_vect))))
     end
     
     # Return the Petri net
     push!(code.args, :pn)
-    
+
     return code
+end
+
+# Parse a guard condition expression (at macro-expand time) into a GuardExpr constructor call.
+# place_syms: Set of Symbol names that are place variables in the guard.
+# Returns a quoted expression that constructs a GuardExpr at runtime.
+function _parse_guard_cond(expr, place_syms::Set)
+    if isa(expr, Expr) && expr.head == :call
+        op  = expr.args[1]
+        lhs = expr.args[2]
+        # Single-place comparison: p op val (lhs must be a place symbol)
+        if length(expr.args) == 3 && op in [:>=, :>, :<=, :<, :(==), :!=] &&
+                isa(lhs, Symbol) && lhs in place_syms
+            k_sym = lhs              # place variable (Place object at runtime)
+            val   = expr.args[3]    # token count (literal Int)
+            return if op == :>=
+                :(GuardGeq($(k_sym).id, $(val)))
+            elseif op == :>
+                :(GuardGeq($(k_sym).id, $(val) + 1))
+            elseif op == :<=
+                :(GuardLeq($(k_sym).id, $(val)))
+            elseif op == :<
+                :(GuardLeq($(k_sym).id, $(val) - 1))
+            elseif op == :(==)
+                :(GuardEq($(k_sym).id, $(val)))
+            else  # :!=
+                :(GuardOr(GuardLeq($(k_sym).id, $(val) - 1),
+                          GuardGeq($(k_sym).id, $(val) + 1)))
+            end
+        # Boolean AND: a && b  or  a & b
+        elseif length(expr.args) == 3 && op in [:&&, :&]
+            return :(GuardAnd($(_parse_guard_cond(expr.args[2], place_syms)),
+                              $(_parse_guard_cond(expr.args[3], place_syms))))
+        # Boolean OR: a || b  or  a | b
+        elseif length(expr.args) == 3 && op in [:||, :|]
+            return :(GuardOr($(_parse_guard_cond(expr.args[2], place_syms)),
+                             $(_parse_guard_cond(expr.args[3], place_syms))))
+        # Negation: !a
+        elseif length(expr.args) == 2 && op == :!
+            return :(GuardNot($(_parse_guard_cond(expr.args[2], place_syms))))
+        end
+    # Handle short-circuit && / || as :&&/:|| head (Julia sometimes uses these)
+    elseif isa(expr, Expr) && expr.head in [:&&, :||]
+        op = expr.head
+        return if op == :&&
+            :(GuardAnd($(_parse_guard_cond(expr.args[1], place_syms)),
+                       $(_parse_guard_cond(expr.args[2], place_syms))))
+        else
+            :(GuardOr($(_parse_guard_cond(expr.args[1], place_syms)),
+                      $(_parse_guard_cond(expr.args[2], place_syms))))
+        end
+    end
+    error("@petrinet guard: unsupported condition `$expr`.\n" *
+          "Supported forms: p >= c, p <= c, p > c, p < c, p == c, p != c, " *
+          "&&, ||, !  (where p is a single place variable and c is an integer literal).\n" *
+          "For multi-place conditions, build GuardExpr directly and call guard() manually.")
 end

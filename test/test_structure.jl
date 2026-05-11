@@ -47,7 +47,7 @@
 
         inarc(pn, "p1", "t1"; mul = 1)
         outarc(pn, "t1", "p2"; mul = 1)
-        guard(tr, m -> m[1] > 0, (p1,))
+        guard(tr, GuardGeq(p1.id, 1), (p1,))   # m[p1] > 0  ↔  m[p1] >= 1
 
         enabled = enablefunc(pn, tr)
         fire = firingfunc(pn, tr)

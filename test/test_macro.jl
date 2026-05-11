@@ -64,9 +64,8 @@
     @test length(pn5.trans) == 1
     @test length(pn5.trans[1].guard) == 1
     @test length(pn5.trans[1].guardplaces) == 1
+    @test pn5.trans[1].guard[1] isa PetriStructure.GuardGeq
 
-    marking = [5, 0]
-    @test pn5.trans[1].guard[1](marking) == true
-    marking = [2, 0]
-    @test pn5.trans[1].guard[1](marking) == false
+    @test evaluate(pn5.trans[1].guard[1], [5, 0]) == true
+    @test evaluate(pn5.trans[1].guard[1], [2, 0]) == false
 end

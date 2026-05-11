@@ -1,281 +1,252 @@
 # PetriStructure.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://okamumu.github.io/PetriStructure.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://okamumu.github.io/PetriStructure.jl/dev/)
-[![Build Status](https://github.com/okamumu/PetriStructure.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/okamumu/PetriStructure.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/okamumu/PetriStructure.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/okamumu/PetriStructure.jl)
-
-A Julia package for modeling and analyzing Petri nets, including Generalized Stochastic Petri Nets (GSPNs).
+A Julia package for structural modeling and analysis of Petri nets and Generalized Stochastic Petri Nets (GSPNs).
 
 ## Features
 
-- **Petri Net Construction**: Create places, transitions, and arcs with intuitive API
-- **Transition Types**:
-  - Exponential (timed) transitions with configurable rates
-  - Immediate transitions with priority weights
-- **Analysis Tools**:
-  - Incidence matrix computation
-  - P-invariant and T-invariant calculation (both classical and SNF-based methods)
-  - Marking analysis (initial, minimum, maximum)
-- **PNML Support**: Load Petri nets from PNML format files
-- **Visualization**: Export to Graphviz DOT format
+- **Net construction** — functional API and `@petrinet` macro DSL
+- **Transition types** — exponential (timed) and immediate
+- **Guard conditions** — symbolic `GuardExpr` tree (Geq, Leq, Eq, And, Or, Not)
+- **Structural analysis** — incidence matrix, P-invariants (Farkas and SNF), T-invariants
+- **SNF / LLL parametrization** — absorb P-invariant constraints into a change of variables `x = x₀ + K·t`
+- **PNML I/O** — load nets from PNML files (supports `ddOrder`, `bound`, `rate`, `timed`)
+- **Visualization** — export to Graphviz DOT format
 
-## Important Notes
-
-⚠️ **This package does NOT generate marking graphs (reachability graphs).** 
-
-The package focuses on:
-- Structural analysis (incidence matrices, invariants)
-- Stochastic simulation and event generation
-- Model construction and visualization
-
-For reachability analysis and state space exploration, please use specialized tools designed for that purpose.
+The package is intentionally structural-only. It does **not** build or enumerate reachability graphs.
 
 ## Installation
 
+This package is distributed as a path dependency within the `experiment-ps4gspn` workspace.
+To use it standalone, add it by path:
+
 ```julia
 using Pkg
-Pkg.add("PetriStructure")
-```
-
-Or from the Julia REPL package mode:
-```julia
-] add PetriStructure
+Pkg.develop(path = "path/to/PetriStructure.jl")
 ```
 
 ## Quick Start
 
+### Functional API
+
 ```julia
 using PetriStructure
 
-# Create a Petri net
 pn = petri()
 
-# Add places with (label, initial_marking, max_capacity)
-p1 = place(pn, "p1", 2, 5)
-p2 = place(pn, "p2", 0, 3)
+# Places: label, initial marking, max capacity
+p1 = place(pn, "p1", 1, 1)
+p2 = place(pn, "p2", 0, 1)
 
-# Add exponential transition with rate
-t1 = exptrans(pn, "t1", 1.5)
+# Exponential (timed) transition
+t1 = exptrans(pn, "t1", 2.0)   # rate = 2.0
 
-# Connect with arcs
-inarc(pn, "p1", "t1"; mul = 1)    # Input arc from p1 to t1
-outarc(pn, "t1", "p2"; mul = 1)   # Output arc from t1 to p2
+# Arcs
+arc(pn, p1, t1)   # input arc  (place → transition)
+arc(pn, t1, p2)   # output arc (transition → place)
 
-# Get initial marking
-m0 = initial(pn)  # [2, 0]
-
-# Compute incidence matrix
-C = incidence(pn)
-
-# Find P-invariants (conservation laws)
-Pinv = pinvariant(C)
-
-# Find T-invariants (cyclic sequences)
-Tinv = tinvariant(C)
-
-# Export to DOT format
-dot_string = todot(pn)
+initial(pn)   # [1, 0]
+maxmark(pn)   # [1, 1]
+incidence(pn) # 2×1 incidence matrix
 ```
 
-### Using the `@petrinet` Macro
-
-The `@petrinet` macro provides a concise syntax for defining Petri nets:
+### `@petrinet` Macro
 
 ```julia
-using PetriStructure
-
-# Define a simple producer-consumer model
 pn = @petrinet begin
-    # Places: name[initial_marking, max_marking]
-    buffer[0, 10]
-    producer[1, 1]
-    consumer[1, 1]
-    
-    # Transitions: exp(rate): name or imm(weight): name
-    exp(2.0): produce
-    exp(1.0): consume
-    
-    # Arcs: source => destination [multiplicity]
-    producer => produce
-    produce => buffer
-    produce => producer
-    buffer => consume
-    consume => consumer
-    consume => consumer
-end
+    # Places: name[initial, max]
+    think[1, 1]
+    fork[1, 1]
+    eat[0, 1]
 
-# Arc multiplicities
-pn2 = @petrinet begin
-    input[5, 10]
-    output[0, 10]
-    exp(1.0): process
-    input => process[2]    # Consumes 2 tokens
-    process => output[3]   # Produces 3 tokens
-end
+    # Transitions: exp(rate): name  or  imm(weight): name
+    exp(1.0): take
+    exp(2.0): release
 
-# With guard conditions
-pn3 = @petrinet begin
-    stock[10, 20]
-    warehouse[0, 100]
-    exp(2.0): ship
-    stock => ship[3]
-    ship => warehouse[3]
-    guard(ship, [stock], stock >= 5)
+    # Arcs: source => destination  or  source => destination[mult]
+    think => take
+    fork  => take
+    take  => eat
+    eat   => release
+    release => think
+    release => fork
 end
 ```
 
-## Examples
-
-### Simple Producer-Consumer
+Guard conditions (single-place comparisons and boolean combinations):
 
 ```julia
-using PetriStructure
+pn = @petrinet begin
+    stock[10, 20]
+    exp(1.0): ship
 
-pn = petri()
+    stock => ship[3]
+    ship  => stock[0]   # placeholder; normally ship → output place
 
-# Places
-buffer = place(pn, "buffer", 0, 10)
-ready = place(pn, "ready", 1, 1)
-
-# Transitions
-produce = exptrans(pn, "produce", 2.0)  # rate = 2.0
-consume = exptrans(pn, "consume", 1.0)  # rate = 1.0
-
-# Producer cycle
-inarc(pn, "ready", "produce")
-outarc(pn, "produce", "buffer")
-outarc(pn, "produce", "ready")
-
-# Consumer
-inarc(pn, "buffer", "consume")
+    guard(ship, [stock], stock >= 3)
+end
 ```
 
 ### Loading from PNML
 
 ```julia
-using PetriStructure
+pn = load_pnml("models/phil_10.pnml")
 
-# Load from file
-pn = load_pnml("model.pnml")
-
-# Or from IO stream
-io = IOBuffer(pnml_string)
-pn = load_pnml(io)
-
-println("Places: ", length(pn.places))
+println("Places: ",      length(pn.places))
 println("Transitions: ", length(pn.trans))
+println("Initial marking: ", initial(pn))
 ```
 
 ## API Reference
 
-### Petri Net Construction
+### Construction
 
-#### Macro Syntax
+| Function | Description |
+|---|---|
+| `petri()` | Create empty `PN` |
+| `place(pn, label, init, max; level=0)` | Add place; domain is `0:max` |
+| `exptrans(pn, label, rate; level=0)` | Add exponential transition |
+| `immtrans(pn, label, weight; level=0)` | Add immediate transition |
+| `arc(pn, place, trans; mul=1)` | Add input arc (place → transition) |
+| `arc(pn, trans, place; mul=1)` | Add output arc (transition → place) |
+| `inarc(pn, src, dest; mul=1)` | Same as above but by label string |
+| `outarc(pn, src, dest; mul=1)` | Same as above but by label string |
+| `guard(tr, g::GuardExpr, places)` | Attach guard to transition |
+| `@petrinet begin … end` | Macro DSL — see below |
 
-- `@petrinet begin ... end` - Declarative Petri net definition
+### Marking
+
+| Function | Description |
+|---|---|
+| `initial(pn)` | Initial marking vector |
+| `maxmark(pn)` | Maximum marking vector |
+| `minmark(pn)` | Minimum marking vector |
+| `domain(p)` | Allowed marking range (`Vector{Int}`) for place `p` |
+
+### Token game
+
+| Function | Description |
+|---|---|
+| `enablefunc(pn, tr)` | Returns a predicate `m -> Bool` |
+| `firingfunc(pn, tr)` | Returns the state update `m -> m'` |
+| `next(pn, tr, m)` | Fire `tr` on marking `m` if enabled; else return copy |
+
+### Structural analysis
+
+| Function | Description |
+|---|---|
+| `incidence(pn)` | `n_places × n_trans` incidence matrix |
+| `pinvariant(pn)` / `pinvariant(C)` | Non-negative P-invariant vectors (Farkas elimination); columns satisfy `C' * y = 0` |
+| `pinvariant_basis(C)` | SNF-based signed P-invariant basis; rows span the integer left-nullspace of `C` |
+| `tinvariant(C)` | T-invariants; columns satisfy `C * y = 0` |
+| `integer_kernel(J)` | Right integer null space of `J` (via SNF right unimodular transform) |
+| `lll_reduce(K)` | LLL lattice basis reduction on column matrix `K` |
+| `pinvariant_reduce(pn)` / `pinvariant_reduce(C, m0)` | Full pipeline → `(x0, K, rank_J)` for `x = x₀ + K·t` |
+
+### Neighbourhood queries
+
+These are used internally by MDD/SMT engines to identify affected variables.
+
+| Function | Description |
+|---|---|
+| `getinouttrans(pn, p)` | `Set` of transition ids connected to place `p` |
+| `getinoutplaces(pn, tr)` | `Set` of place ids connected to transition `tr` |
+| `getrelatedplaces(pn, tr)` | `Set` of place ids connected to `tr`, including guard places |
+| `geteqns(pn, M, tr)` | Column indices in `M` (P-invariant matrix) that overlap `tr`'s neighbourhood |
+
+### Guard types
+
+Guards are stored as an expression tree; `evaluate(g, m)` tests a marking vector.
+
+| Type | Meaning |
+|---|---|
+| `GuardGeq(place_id, val)` | `m[place_id] >= val` |
+| `GuardLeq(place_id, val)` | `m[place_id] <= val` |
+| `GuardEq(place_id, val)` | `m[place_id] == val` |
+| `GuardGt(place_id, val)` | `m[place_id] >= val+1` (integer normalised) |
+| `GuardLt(place_id, val)` | `m[place_id] <= val-1` (integer normalised) |
+| `GuardNe(place_id, val)` | `GuardOr(GuardLeq(…,val-1), GuardGeq(…,val+1))` |
+| `GuardAnd(left, right)` | Logical AND |
+| `GuardOr(left, right)` | Logical OR |
+| `GuardNot(expr)` | Logical NOT |
+
+`guardplace_ids(g)` returns the `Set{Int}` of place ids referenced by guard `g`.
+
+### `@petrinet` macro syntax
+
+```
+place_name[initial, max]               # place
+exp(rate): trans_name                  # exponential transition
+imm(weight): trans_name                # immediate transition
+src => dst                             # arc, multiplicity 1
+src => dst[mult]                       # arc with multiplicity
+guard(trans, [p1, p2, …], condition)   # guard
+```
+
+Supported guard condition forms (single-place comparisons only):
+
+```
+p >= c    p > c    p <= c    p < c    p == c    p != c
+cond1 && cond2    cond1 || cond2    !cond
+```
+
+For multi-place linear conditions (e.g. `p1 + p2 >= k`), build `GuardExpr` manually and call `guard()` directly.
+
+### File I/O and visualisation
+
+| Function | Description |
+|---|---|
+| `load_pnml(path)` | Load from PNML file |
+| `load_pnml(io::IO)` | Load from IO stream |
+| `todot(pn)` | Export to Graphviz DOT string |
+
+PNML attributes supported per element:
+
+- **place**: `initialMarking`, `bound` (max tokens), `ddOrder` (insertion order for MDD variable levels)
+- **transition**: `rate`, `timed` (true → exponential; false → immediate)
+- **arc**: `inscription` (multiplicity, default 1)
+
+## SNF / LLL parametrisation
+
+P-invariants define constraints `J·x = J·m₀` on reachable markings (`J` = row-stacked invariant vectors).
+`pinvariant_reduce` absorbs these into a change of variables so that the free parameter vector `t` has no invariant constraints:
 
 ```julia
-@petrinet begin
-    place_name[initial, max]          # Define place
-    exp(rate): trans_name             # Exponential transition
-    imm(weight): trans_name           # Immediate transition
-    source => destination             # Arc (multiplicity 1)
-    source => destination[mult]       # Arc with multiplicity
-    guard(trans, [places...], cond)   # Guard condition (use place names directly)
-end
-
-# Guard examples:
-guard(t1, [p1], p1 >= 5)                        # Single place
-guard(t2, [p1, p2], p1 + p2 >= 10)              # Multiple places
-guard(t3, [stock, buffer], stock >= 3 && buffer < 10)  # Complex condition
+x0, K, rank_J = pinvariant_reduce(pn)
+# x = x0 + K * t  for any integer t satisfying capacity bounds
+# rank_J = number of absorbed conservation laws
+# size(K, 2) = n_places - rank_J = free dimension
 ```
 
-#### Functional API
+The basis `K` is LLL-reduced for shorter, sparser columns — important for keeping MDD/BDD node counts small when used in state-space methods.
 
-- `petri()` - Create empty Petri net
-- `place(pn, label, initial, max; level=0)` - Add place
-- `exptrans(pn, label, rate; level=0)` - Add exponential transition
-- `immtrans(pn, label, weight; level=0)` - Add immediate transition
-- `inarc(pn, place, trans; mul=1)` - Add input arc
-- `outarc(pn, trans, place; mul=1)` - Add output arc
-- `arc(pn, src, dest; mul=1)` - Generic arc (direction auto-detected)
-- `guard(trans, func, places)` - Add guard condition to transition
+## Examples
 
-### Marking Operations
+See the [`examples/`](examples/) directory:
 
-- `initial(pn)` - Get initial marking vector
-- `maxmark(pn)` - Get maximum marking vector
-- `minmark(pn)` - Get minimum marking vector
-- `domain(place)` - Get allowed marking range for place
-
-### Transition Operations
-
-- `enablefunc(pn, trans)` - Get predicate to check if transition is enabled
-- `firingfunc(pn, trans)` - Get function to fire transition
-- `next(pn, trans, marking)` - Fire transition if enabled
-
-### Analysis
-
-- `incidence(pn)` - Compute incidence matrix
-- `pinvariant(C)` - Compute P-invariants from incidence matrix (conservation laws)
-- `pinvariant_basis(C)` - Compute P-invariant basis using Smith Normal Form (allows signed coefficients)
-- `tinvariant(C)` - Compute T-invariants from incidence matrix (cyclic firing sequences)
-
-### File I/O
-
-- `load_pnml(path)` - Load from PNML file
-- `load_pnml(io)` - Load from IO stream
-- `todot(pn)` - Export to Graphviz DOT format
-
-## More Examples
-
-See the [`examples/`](examples/) directory for detailed examples:
-
-- [`simple_example.jl`](examples/simple_example.jl) - Basic Petri net operations
-- [`dining_philosophers.jl`](examples/dining_philosophers.jl) - Classic dining philosophers problem
-- [`invariant_example.jl`](examples/invariant_example.jl) - P-invariants and T-invariants analysis
-- [`macro_example.jl`](examples/macro_example.jl) - Using the @petrinet macro
-- [`pnml_example.jl`](examples/pnml_example.jl) - Loading PNML files
-
-## Visualization
-
-Export to DOT format and visualize with Graphviz:
-
-```julia
-dot_string = todot(pn)
-write("model.dot", dot_string)
-```
-
-Then convert to image:
-```bash
-dot -Tpng model.dot -o model.png
-dot -Tsvg model.dot -o model.svg
-```
+| File | Topic |
+|---|---|
+| `simple_example.jl` | Basic construction and incidence matrix |
+| `dining_philosophers.jl` | Classic dining philosophers |
+| `invariant_example.jl` | P-invariants and T-invariants |
+| `macro_example.jl` | `@petrinet` macro |
+| `pnml_example.jl` | Loading PNML files |
+| `hnf_lll_example.jl` | SNF / LLL parametrisation |
 
 ## Testing
 
-Run the test suite:
-
-```julia
-using Pkg
-Pkg.test("PetriStructure")
+```bash
+julia --project=PetriStructure.jl -e 'using Pkg; Pkg.test()'
 ```
+
+## Dependencies
+
+- [`Nemo`](https://nemocas.github.io/Nemo.jl/stable/) — Smith Normal Form and LLL (used in `analysis.jl`)
+- [`EzXML`](https://juliaio.github.io/EzXML.jl/stable/) — PNML parsing (used in `pnml.jl`)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT — see [LICENSE](LICENSE).
 
-## References
+## Author
 
-- **Petri Nets**: C.A. Petri, "Kommunikation mit Automaten" (1962)
-- **GSPN**: M. Ajmone Marsan et al., "Modelling with Generalized Stochastic Petri Nets" (1995)
-- **Smith Normal Form**: Used for invariant computation via the Nemo.jl library
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Authors
-
-- Hiroyuki Okamura <okamu@hiroshima-u.ac.jp>
+Hiroyuki Okamura <okamu@hiroshima-u.ac.jp>

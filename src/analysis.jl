@@ -26,7 +26,7 @@ function enablefunc(::PN, tr::AbstractTrans)
     m -> begin
         enable = true
         for g in tr.guard
-            enable = and(enable, g(m))
+            enable = and(enable, evaluate(g, m))
         end
         for a in tr.inarcs
             enable = and(enable, m[a.src.id] >= a.mul)
@@ -71,6 +71,15 @@ function incidence(pn::PN)
         end
     end
     return C
+end
+
+"""
+    pinvariant(pn)
+
+Compute P-invariants of Petri net `pn` from its incidence matrix.
+"""
+function pinvariant(pn::PN)
+    pinvariant(incidence(pn))
 end
 
 """
@@ -126,9 +135,10 @@ function pinvariant_basis(C)
     end
 
     basis = T[(r + 1):m, :]
-    B = zeros(Int, Nemo.ncols(basis), Nemo.nrows(basis))
-    for i in 1:Nemo.nrows(basis), j in 1:Nemo.ncols(basis)
-        B[j, i] = Int(basis[i, j])
+    nr, nc = Nemo.nrows(basis), Nemo.ncols(basis)
+    B = zeros(Int, nr, nc)
+    for i in 1:nr, j in 1:nc
+        B[i, j] = Int(basis[i, j])
     end
     return B
 end
@@ -162,4 +172,78 @@ function geteqns(pn::PN, M, tr::AbstractTrans)
         end
     end
     sort([i for i in result])
+end
+
+"""
+    integer_kernel(J)
+
+Right integer null space of matrix `J` (size k×m, rows are P-invariants).
+Returns an m×d matrix whose columns form a ℤ-basis for {x ∈ ℤ^m : J·x = 0},
+where d = m − rank(J).
+"""
+function integer_kernel(J)
+    k, m = size(J)
+    if k == 0
+        K = zeros(Int, m, m)
+        for i in 1:m; K[i, i] = 1; end
+        return K
+    end
+    A = Nemo.matrix(Nemo.ZZ, J)
+    S, _, V = Nemo.snf_with_transform(A)   # S = _ * J * V; V is m×m right transform
+    rk = Nemo.rank(S)
+    d = m - rk
+    d == 0 && return zeros(Int, m, 0)
+    K = zeros(Int, m, d)
+    for i in 1:m, j in 1:d
+        K[i, j] = Int(V[i, rk + j])
+    end
+    return K
+end
+
+"""
+    lll_reduce(K)
+
+Apply LLL lattice basis reduction to integer matrix `K` (m×d, columns are basis
+vectors). Returns an m×d matrix with shorter, more orthogonal columns spanning
+the same integer lattice.
+"""
+function lll_reduce(K)
+    m, d = size(K)
+    d == 0 && return K
+    A = Nemo.matrix(Nemo.ZZ, collect(Int, K'))   # d×m, rows are basis vectors
+    L = Nemo.lll(A)
+    result = zeros(Int, m, d)
+    for j in 1:d, i in 1:m
+        result[i, j] = Int(L[j, i])
+    end
+    return result
+end
+
+"""
+    pinvariant_reduce(C, m0)
+    pinvariant_reduce(pn)
+
+Compute a change of variables x = x0 + K·t that parametrizes all markings
+consistent with the P-invariants of incidence matrix `C` (or net `pn`),
+anchored at initial marking `m0`.
+
+Returns a named tuple:
+- `x0::Vector{Int}`  — particular solution (= m0)
+- `K::Matrix{Int}`   — LLL-reduced ℤ-basis of the constraint kernel (m×d)
+- `rank_J::Int`      — number of independent P-invariant constraints
+
+Any invariant-consistent marking satisfies x = x0 + K·t for some t ∈ ℤ^d,
+plus the per-place capacity bounds. Absorbing P-invariants into the
+parametrization (especially wide-support ones) reduces the effective dimension
+for MDD/BDD-based reachability methods.
+"""
+function pinvariant_reduce(C, m0)
+    J = pinvariant_basis(C)         # k×m, rows are P-invariants
+    K_raw = integer_kernel(J)       # m×d right null space of J
+    K = lll_reduce(K_raw)
+    return (x0=m0, K=K, rank_J=size(J, 1))
+end
+
+function pinvariant_reduce(pn::PN)
+    pinvariant_reduce(incidence(pn), initial(pn))
 end
