@@ -8,9 +8,10 @@ Macro for defining Petri nets with a concise syntax.
     p1[1, 10]
     p2[0, 5]
     
-    # Transitions: exp(rate): name or imm(weight): name
+    # Transitions: exp(rate): name, imm(weight): name, or gen(dist): name
     exp(1.0): t1
     imm(1.0): t2
+    gen(detdist(2.0)): t3            # general transition; optional policy: gen(detdist(2.0), :prs): t3
     
     # Arcs: source => destination or source => destination[mult]
     p1 => t1
@@ -97,12 +98,16 @@ function _parse_petrinet_new(expr)
                 param = trans_spec.args[2]
                 
                 if trans_type in [:exp, :imm]
-                    push!(transitions_list, (name=trans_name, type=trans_type, param=param))
+                    push!(transitions_list, (name=trans_name, type=trans_type, param=param, policy=nothing))
+                elseif trans_type == :gen
+                    # gen(dist): name  or  gen(dist, :policy): name
+                    policy = length(trans_spec.args) >= 3 ? trans_spec.args[3] : nothing
+                    push!(transitions_list, (name=trans_name, type=trans_type, param=param, policy=policy))
                 else
-                    error("Transition type must be exp() or imm()")
+                    error("Transition type must be exp(), imm() or gen()")
                 end
             else
-                error("Transition syntax: exp(rate): name or imm(weight): name")
+                error("Transition syntax: exp(rate): name, imm(weight): name or gen(dist): name")
             end
         else
             error("Unrecognized syntax: $line")
@@ -126,8 +131,14 @@ function _parse_petrinet_new(expr)
         tname_str = String(t.name)
         if t.type == :exp
             push!(code.args, :($(t.name) = exptrans(pn, $(tname_str), $(t.param))))
-        else  # :imm
+        elseif t.type == :imm
             push!(code.args, :($(t.name) = immtrans(pn, $(tname_str), $(t.param))))
+        else  # :gen
+            if t.policy === nothing
+                push!(code.args, :($(t.name) = gentrans(pn, $(tname_str), $(t.param))))
+            else
+                push!(code.args, :($(t.name) = gentrans(pn, $(tname_str), $(t.param); policy=$(t.policy))))
+            end
         end
     end
     

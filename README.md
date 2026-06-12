@@ -5,7 +5,8 @@ A Julia package for structural modeling and analysis of Petri nets and Generaliz
 ## Features
 
 - **Net construction** — functional API and `@petrinet` macro DSL
-- **Transition types** — exponential (timed) and immediate
+- **Transition types** — exponential (timed), immediate, and general (`GenTrans`,
+  with `det`/`unif`/`exp` firing-time distributions and a preemption policy)
 - **Guard conditions** — symbolic `GuardExpr` tree (Geq, Leq, Eq, And, Or, Not)
 - **Structural analysis** — incidence matrix, P-invariants (Farkas and SNF), T-invariants
 - **SNF / LLL parametrization** — absorb P-invariant constraints into a change of variables `x = x₀ + K·t`
@@ -106,6 +107,7 @@ println("Initial marking: ", initial(pn))
 | `place(pn, label, init, max; level=0)` | Add place; domain is `0:max` |
 | `exptrans(pn, label, rate; level=0)` | Add exponential transition |
 | `immtrans(pn, label, weight; level=0)` | Add immediate transition |
+| `gentrans(pn, label, dist; policy=:prd, level=0)` | Add general transition (`dist` from `detdist`/`unifdist`/`expdist`) |
 | `arc(pn, place, trans; mul=1)` | Add input arc (place → transition) |
 | `arc(pn, trans, place; mul=1)` | Add output arc (transition → place) |
 | `inarc(pn, src, dest; mul=1)` | Same as above but by label string |

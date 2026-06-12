@@ -55,6 +55,30 @@ struct ExpTrans <: AbstractTrans
 end
 
 """
+    GenTrans
+
+General transition whose firing time follows a `GenDist` (`dist`). `policy` is
+the memory policy applied on preemption, mirroring `gospn`:
+
+- `:prd` — preemptive repeat different (resample on preemption; the default)
+- `:prs` — preemptive resume (the elapsed age is kept)
+- `:pri` — preemptive repeat identical (the sampled firing time is kept)
+
+The policy is carried structurally for downstream state-space / simulation tools.
+"""
+struct GenTrans <: AbstractTrans
+    id::Int
+    label::String
+    level::Int
+    inarcs::Vector{AbstractArc}
+    outarcs::Vector{AbstractArc}
+    dist::GenDist
+    policy::Symbol
+    guard::Vector{GuardExpr}
+    guardplaces::Set{AbstractPlace}
+end
+
+"""
     guard(tr, g::GuardExpr, places)
 
 Attach structured guard expression `g` to transition `tr` and record dependent `places`.
@@ -97,6 +121,7 @@ struct PN
     trans::Vector{AbstractTrans}
     exptrans::Vector{AbstractTrans}
     immtrans::Vector{AbstractTrans}
+    gentrans::Vector{AbstractTrans}
     place_index::Dict{Symbol,Int}  # place label (Symbol) => index in places array
 end
 
@@ -106,7 +131,7 @@ end
 Create an empty Petri net container.
 """
 function petri()
-    PN(Dict(), [], [], [], [], Dict())
+    PN(Dict(), [], [], [], [], [], Dict())
 end
 
 """
@@ -153,6 +178,28 @@ function exptrans(pn::PN, label::String, rate::Float64; level = 0)
     e = ExpTrans(length(pn.trans)+1, label, level, [], [], rate, GuardExpr[], Set())
     push!(pn.trans, e)
     push!(pn.exptrans, e)
+    pn.labels[label] = e
+    e
+end
+
+"""
+    gentrans(pn, label, dist::GenDist; policy=:prd, level=0)
+
+Add a general transition whose firing time follows distribution `dist`.
+`policy` is the preemption memory policy (`:prd`, `:prs`, or `:pri`); see
+[`GenTrans`](@ref). Build `dist` with [`detdist`](@ref), [`unifdist`](@ref),
+or [`expdist`](@ref).
+"""
+function gentrans(pn::PN, label::String, dist::GenDist; policy::Symbol = :prd, level = 0)
+    if !(policy in (:prd, :prs, :pri))
+        error("gentrans: policy must be :prd, :prs or :pri (got :$policy)")
+    end
+    if level == 0
+        level = length(pn.trans)+1
+    end
+    e = GenTrans(length(pn.trans)+1, label, level, [], [], dist, policy, GuardExpr[], Set())
+    push!(pn.trans, e)
+    push!(pn.gentrans, e)
     pn.labels[label] = e
     e
 end

@@ -27,7 +27,9 @@ The package has six source files, each with a distinct responsibility:
 
 - **`guard.jl`** — Guard condition types. `GuardExpr` abstract type; leaf nodes `GuardGeq`, `GuardLeq`, `GuardEq` (single-place comparisons); composite nodes `GuardAnd`, `GuardOr`, `GuardNot`. Constructor aliases `GuardGt`/`GuardLt`/`GuardNe` normalise strict inequalities to `Geq`/`Leq` using integer discreteness. `evaluate(g, m)` evaluates any `GuardExpr` against a marking vector; `guardplace_ids(g)` returns the `Set{Int}` of referenced place ids. Must be included first (before `structure.jl`).
 
-- **`structure.jl`** — Core types and construction API. Defines `Place`, `ImmTrans`, `ExpTrans`, `InArc`, `OutArc`, and the `PN` container. All construction functions (`petri`, `place`, `exptrans`, `immtrans`, `inarc`, `outarc`, `arc`, `guard`) live here. `PN.place_index` maps place label `Symbol`s to their position in `pn.places`, used at runtime by guard closures.
+- **`dist.jl`** — Firing-time distributions for general transitions. Abstract `GenDist` with concrete `DetDist`/`UnifDist`/`ExpDist`; lowercase constructors `detdist`/`unifdist`/`expdist` (lowercase deliberately, so `det` does not shadow `LinearAlgebra.det` in downstream packages). Must be included before `structure.jl` (referenced by `GenTrans`).
+
+- **`structure.jl`** — Core types and construction API. Defines `Place`, `ImmTrans`, `ExpTrans`, `GenTrans`, `InArc`, `OutArc`, and the `PN` container. All construction functions (`petri`, `place`, `exptrans`, `immtrans`, `gentrans`, `inarc`, `outarc`, `arc`, `guard`) live here. `GenTrans` carries a `GenDist` plus a preemption `policy` (`:prd`/`:prs`/`:pri`) and is tracked in `PN.gentrans` (parallel to `pn.exptrans`/`pn.immtrans`); the distribution/policy are structural metadata only — `enablefunc`/`firingfunc`/`incidence` treat every transition uniformly via its arcs and guard. `PN.place_index` maps place label `Symbol`s to their position in `pn.places`, used at runtime by guard closures.
 
 - **`analysis.jl`** — Structural analysis. Imports `Nemo` for Smith Normal Form. Implements:
   - `enablefunc`/`firingfunc`/`next` for token-game simulation

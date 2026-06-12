@@ -70,6 +70,20 @@ function _draw(pn::PN, io::IO, x::ExpTrans, visited)
     end
 end
 
+function _draw(pn::PN, io::IO, x::GenTrans, visited)
+    if x in visited
+        return nothing
+    end
+    println(io, "\"obj$(objectid(x))\" [shape=box,label=\"$(x.label)\", width=0.8, height=0.2, style=filled, fillcolor=lightgray];")
+    push!(visited, x)
+    for a in x.inarcs
+        _draw(pn, io, a, visited)
+    end
+    for a in x.outarcs
+        _draw(pn, io, a, visited)
+    end
+end
+
 function _draw(pn::PN, io::IO, x::InArc, visited)
     if x in visited
         return nothing

@@ -2,6 +2,25 @@
 
 All notable changes to PetriStructure.jl are documented in this file.
 
+## [1.2.0] - 2026-06-12
+
+### Added
+
+- **`dist.jl`** — firing-time distributions for general transitions
+  - Abstract type `GenDist` with concrete `DetDist`, `UnifDist`, `ExpDist`
+  - Constructors `detdist(v)`, `unifdist(a, b)`, `expdist(rate)` (lowercase to avoid
+    clashing with `LinearAlgebra.det`)
+- **`GenTrans`** — general transition carrying a `GenDist` and a preemption
+  `policy` (`:prd` default, `:prs`, `:pri`), mirroring the `gospn` tool
+  - `gentrans(pn, label, dist; policy=:prd, level=0)` constructor; transitions are
+    tracked in the new `PN.gentrans` list
+  - Participates in `enablefunc`/`firingfunc`/`incidence` like any transition
+    (guards supported)
+  - `@petrinet` gains `gen(dist): name` (and `gen(dist, :policy): name`) syntax
+  - Graphviz export draws GEN transitions as a light-gray box
+  - The distribution/policy are stored structurally for downstream state-space and
+    simulation tools; the structural analyses here do not interpret them
+
 ## [1.1.0] - 2026-05-11
 
 ### Added
