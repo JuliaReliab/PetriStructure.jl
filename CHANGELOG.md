@@ -2,6 +2,30 @@
 
 All notable changes to PetriStructure.jl are documented in this file.
 
+## [1.3.0] - 2026-08-29
+
+### Changed
+
+- The net's own types are concrete. `Place`, the per-kind transition lists
+  (`PN.exptrans`/`immtrans`/`gentrans`), the arc lists on a transition
+  (`Vector{InArc}` / `Vector{OutArc}`) and the place a hot arc points at
+  (`InArc.src`, `OutArc.dest`) were all declared as their abstract supertype, so
+  the token game could not be inlined and boxed a value per arc per call. On a
+  reachability search this was the dominant cost: a hand-written concretely typed
+  equivalent ran about 10x faster and allocated about 3x less. `PN.trans` stays
+  `Vector{AbstractTrans}` because it genuinely holds all three kinds, as does
+  `Place.inarcs`/`outarcs` (arcs and places refer to each other, so one side must
+  stay abstract); neither is on a hot path.
+
+### Added
+
+- `isenabled(pn, tr, m)` and `fire(pn, tr, m)` — the token game called directly.
+  `enablefunc`/`firingfunc` build a closure per call, which a marking-graph search
+  pays for at every transition of every marking; they are now one-line wrappers
+  over these and behave exactly as before. Both keep the `and`-based, deliberately
+  non-short-circuiting form so that a symbolic `m` (the MDD engines' duck typing)
+  still visits every term.
+
 ## [1.2.0] - 2026-06-12
 
 ### Added

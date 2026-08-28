@@ -23,6 +23,36 @@ struct Place <: AbstractPlace
 end
 
 """
+    InArc
+
+An input arc from a place to a transition. `mul` is the required token count.
+
+`src` is a concrete `Place` rather than an `AbstractPlace`: `enablefunc` and
+`firingfunc` read `a.src.id` for every arc of every transition at every marking,
+and an abstractly typed field makes that access a dynamic lookup that the
+compiler cannot inline, boxing a value per iteration. `dest` points back at the
+owning transition, which really can be any of the three kinds, and is not read on
+those paths.
+"""
+struct InArc <: AbstractArc
+    src::Place
+    dest::AbstractTrans
+    mul::Int
+end
+
+"""
+    OutArc
+
+An output arc from a transition to a place. `mul` is the produced token count.
+`dest` is a concrete `Place` for the reason given on [`InArc`](@ref).
+"""
+struct OutArc <: AbstractArc
+    src::AbstractTrans
+    dest::Place
+    mul::Int
+end
+
+"""
     ImmTrans
 
 Immediate transition with weight and optional guard expressions.
@@ -31,11 +61,11 @@ struct ImmTrans <: AbstractTrans
     id::Int
     label::String
     level::Int
-    inarcs::Vector{AbstractArc}
-    outarcs::Vector{AbstractArc}
+    inarcs::Vector{InArc}
+    outarcs::Vector{OutArc}
     weight::Float64
     guard::Vector{GuardExpr}
-    guardplaces::Set{AbstractPlace}
+    guardplaces::Set{Place}
 end
 
 """
@@ -47,11 +77,11 @@ struct ExpTrans <: AbstractTrans
     id::Int
     label::String
     level::Int
-    inarcs::Vector{AbstractArc}
-    outarcs::Vector{AbstractArc}
+    inarcs::Vector{InArc}
+    outarcs::Vector{OutArc}
     rate::Float64
     guard::Vector{GuardExpr}
-    guardplaces::Set{AbstractPlace}
+    guardplaces::Set{Place}
 end
 
 """
@@ -70,12 +100,12 @@ struct GenTrans <: AbstractTrans
     id::Int
     label::String
     level::Int
-    inarcs::Vector{AbstractArc}
-    outarcs::Vector{AbstractArc}
+    inarcs::Vector{InArc}
+    outarcs::Vector{OutArc}
     dist::GenDist
     policy::Symbol
     guard::Vector{GuardExpr}
-    guardplaces::Set{AbstractPlace}
+    guardplaces::Set{Place}
 end
 
 """
@@ -89,39 +119,17 @@ function guard(tr::AbstractTrans, g::GuardExpr, p)
 end
 
 """
-    InArc
-
-An input arc from a place to a transition. `mul` is the required token count.
-"""
-struct InArc <: AbstractArc
-    src::AbstractPlace
-    dest::AbstractTrans
-    mul::Int
-end
-
-"""
-    OutArc
-
-An output arc from a transition to a place. `mul` is the produced token count.
-"""
-struct OutArc <: AbstractArc
-    src::AbstractTrans
-    dest::AbstractPlace
-    mul::Int
-end
-
-"""
     PN
 
 Container for a Petri net, storing places, transitions, and arcs.
 """
 struct PN
     labels::Dict{String,Union{AbstractPlace,AbstractTrans}}
-    places::Vector{AbstractPlace}
-    trans::Vector{AbstractTrans}
-    exptrans::Vector{AbstractTrans}
-    immtrans::Vector{AbstractTrans}
-    gentrans::Vector{AbstractTrans}
+    places::Vector{Place}
+    trans::Vector{AbstractTrans}   # every kind, in insertion order -- genuinely mixed
+    exptrans::Vector{ExpTrans}
+    immtrans::Vector{ImmTrans}
+    gentrans::Vector{GenTrans}
     place_index::Dict{Symbol,Int}  # place label (Symbol) => index in places array
 end
 
@@ -131,7 +139,7 @@ end
 Create an empty Petri net container.
 """
 function petri()
-    PN(Dict(), [], [], [], [], [], Dict())
+    PN(Dict(), Place[], AbstractTrans[], ExpTrans[], ImmTrans[], GenTrans[], Dict())
 end
 
 """
@@ -143,7 +151,7 @@ function place(pn::PN, label::String, init::Int, max::Int; level = 0)
     if level == 0
         level = length(pn.places)+1
     end
-    p = Place(length(pn.places)+1, label, level, init, collect(0:max), [], [])
+    p = Place(length(pn.places)+1, label, level, init, collect(0:max), AbstractArc[], AbstractArc[])
     push!(pn.places, p)
     pn.labels[label] = p
     pn.place_index[Symbol(label)] = length(pn.places)  # Register index by Symbol
@@ -159,7 +167,7 @@ function immtrans(pn::PN, label::String, weight::Float64; level = 0)
     if level == 0
         level = length(pn.trans)+1
     end
-    e = ImmTrans(length(pn.trans)+1, label, level, [], [], weight, GuardExpr[], Set())
+    e = ImmTrans(length(pn.trans)+1, label, level, InArc[], OutArc[], weight, GuardExpr[], Set{Place}())
     push!(pn.trans, e)
     push!(pn.immtrans, e)
     pn.labels[label] = e
@@ -175,7 +183,7 @@ function exptrans(pn::PN, label::String, rate::Float64; level = 0)
     if level == 0
         level = length(pn.trans)+1
     end
-    e = ExpTrans(length(pn.trans)+1, label, level, [], [], rate, GuardExpr[], Set())
+    e = ExpTrans(length(pn.trans)+1, label, level, InArc[], OutArc[], rate, GuardExpr[], Set{Place}())
     push!(pn.trans, e)
     push!(pn.exptrans, e)
     pn.labels[label] = e
@@ -197,7 +205,7 @@ function gentrans(pn::PN, label::String, dist::GenDist; policy::Symbol = :prd, l
     if level == 0
         level = length(pn.trans)+1
     end
-    e = GenTrans(length(pn.trans)+1, label, level, [], [], dist, policy, GuardExpr[], Set())
+    e = GenTrans(length(pn.trans)+1, label, level, InArc[], OutArc[], dist, policy, GuardExpr[], Set{Place}())
     push!(pn.trans, e)
     push!(pn.gentrans, e)
     pn.labels[label] = e
