@@ -1,7 +1,7 @@
 module PetriStructure
 
 export petri, place, immtrans, exptrans, gentrans, guard, arc, inarc, outarc,
-       initial, maxmark, minmark, enablefunc, firingfunc,
+       initial, maxmark, minmark, enablefunc, firingfunc, isenabled, fire,
        domain, incidence, pinvariant, pinvariant_basis, tinvariant, next, todot, load_pnml,
        integer_kernel, lll_reduce, pinvariant_reduce,
        getinoutplaces, getrelatedplaces,

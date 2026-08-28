@@ -1,5 +1,17 @@
 import Nemo
 
+"""
+    and(x, y)
+
+Conjunction of two enabling terms, used by [`isenabled`](@ref) to combine a
+transition's guards and input arcs.
+
+This exists as a function, rather than `&&`, so that a marking need not hold
+`Bool`s. A downstream MDD engine passes a vector of symbolic values and adds its
+own `and` method, which builds a node of its expression instead of computing a
+truth value; that is also why `isenabled` visits every term rather than
+short-circuiting. Only the `Bool` method lives here.
+"""
 function and(x::Bool, y::Bool)
     x && y
 end
@@ -10,48 +22,70 @@ end
 Apply transition `tr` to `marking` if enabled; otherwise return a copy.
 """
 function next(pn::PN, tr::AbstractTrans, x)
-    if enablefunc(pn, tr)(x)
-        firingfunc(pn, tr)(x)
+    if isenabled(pn, tr, x)
+        fire(pn, tr, x)
     else
         copy(x)
     end
 end
 
 """
+    isenabled(pn, tr, m)
+
+Whether transition `tr` is enabled in marking `m`.
+
+The guards and arcs are combined with [`and`](@ref) rather than `&&`, and every
+one of them is visited even once the result is known: `m` is not required to hold
+`Int`s. Downstream MDD engines pass a vector of symbolic values and add their own
+`and` method, and building their expression needs every term. Do not turn this
+into a short-circuit.
+
+This is the form to call in a loop. `enablefunc` builds a closure per call, which
+a search over a marking graph pays for at every transition of every marking.
+"""
+function isenabled(::PN, tr::AbstractTrans, m)
+    enable = true
+    for g in tr.guard
+        enable = and(enable, evaluate(g, m))
+    end
+    for a in tr.inarcs
+        enable = and(enable, m[a.src.id] >= a.mul)
+    end
+    enable
+end
+
+"""
+    fire(pn, tr, m)
+
+The marking reached by firing `tr` in `m`. `m` is not modified. This is the form
+to call in a loop; see [`isenabled`](@ref).
+"""
+function fire(::PN, tr::AbstractTrans, m)
+    mm = copy(m)
+    for a in tr.inarcs
+        mm[a.src.id] -= a.mul
+    end
+    for a in tr.outarcs
+        mm[a.dest.id] += a.mul
+    end
+    mm
+end
+
+"""
     enablefunc(pn, tr)
 
 Return a predicate that checks whether transition `tr` is enabled for a marking.
+Prefer [`isenabled`](@ref) when calling in a loop.
 """
-function enablefunc(::PN, tr::AbstractTrans)
-    m -> begin
-        enable = true
-        for g in tr.guard
-            enable = and(enable, evaluate(g, m))
-        end
-        for a in tr.inarcs
-            enable = and(enable, m[a.src.id] >= a.mul)
-        end
-        enable
-    end
-end
+enablefunc(pn::PN, tr::AbstractTrans) = m -> isenabled(pn, tr, m)
 
 """
     firingfunc(pn, tr)
 
 Return the state update function that fires transition `tr` on a marking.
+Prefer [`fire`](@ref) when calling in a loop.
 """
-function firingfunc(pn::PN, tr::AbstractTrans)
-    m -> begin
-        mm = copy(m)
-        for a in tr.inarcs
-            mm[a.src.id] -= a.mul
-        end
-        for a in tr.outarcs
-            mm[a.dest.id] += a.mul
-        end
-        mm
-    end
-end
+firingfunc(pn::PN, tr::AbstractTrans) = m -> fire(pn, tr, m)
 
 """
     incidence(pn)
