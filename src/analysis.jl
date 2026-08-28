@@ -1,5 +1,17 @@
 import Nemo
 
+"""
+    and(x, y)
+
+Conjunction of two enabling terms, used by [`isenabled`](@ref) to combine a
+transition's guards and input arcs.
+
+This exists as a function, rather than `&&`, so that a marking need not hold
+`Bool`s. A downstream MDD engine passes a vector of symbolic values and adds its
+own `and` method, which builds a node of its expression instead of computing a
+truth value; that is also why `isenabled` visits every term rather than
+short-circuiting. Only the `Bool` method lives here.
+"""
 function and(x::Bool, y::Bool)
     x && y
 end
